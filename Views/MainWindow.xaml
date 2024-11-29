@@ -1,0 +1,44 @@
+﻿<Window x:Class="UsbMonitor.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:UsbMonitor.ViewModels"
+        xmlns:cv="clr-namespace:UsbMonitor.Converters"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance vm:MainViewModel, IsDesignTimeCreatable=True}"
+        Style="{StaticResource MaterialDesignWindow}"
+        Title="COM(USB) Monitor" Height="350" Width="525">
+    <Window.Resources>
+        <cv:GreaterO0ToTrueConverter x:Key="GreaterO0ToTrueConverter" />
+    </Window.Resources>
+    <Grid>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" MinWidth="200" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Text="可用串口列表：" VerticalAlignment="Center" Margin="10" Grid.Row="0" />
+
+                <ListBox ItemsSource="{Binding SerialPortList}"
+                         SelectedItem="{Binding SelectedPort}"
+                         Margin="10 0 10 0"
+                         Grid.Row="1" />
+
+                <Button Content="{Binding BtnContent}"
+                        Command="{Binding CommandOpen}"
+                        IsEnabled="{Binding SerialPortList.Count, Converter={StaticResource GreaterO0ToTrueConverter}}"
+                        Margin="10"
+                        Grid.Row="2" />
+            </Grid>
+
+            <ListBox ItemsSource="{Binding HistoryList}" Margin="10" Grid.Column="1" />
+        </Grid>
+    </Grid>
+</Window>
