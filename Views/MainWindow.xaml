@@ -39,7 +39,18 @@
                         Grid.Row="2" />
             </Grid>
 
-            <ListBox ItemsSource="{Binding HistoryList}" Margin="10" Grid.Column="1" />
+            <Grid Grid.Column="1">
+                <ListBox ItemsSource="{Binding HistoryList}" Margin="10" />
+
+                <Rectangle IsHitTestVisible="False">
+                    <Rectangle.Fill>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                            <GradientStop Color="Transparent" Offset="0" />
+                            <GradientStop Color="#FFFFFFFF" Offset="1" />
+                        </LinearGradientBrush>
+                    </Rectangle.Fill>
+                </Rectangle>
+            </Grid>
         </Grid>
     </m3:DialogHost>
 </Window>
