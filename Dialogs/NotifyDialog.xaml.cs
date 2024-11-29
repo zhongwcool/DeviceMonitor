@@ -6,7 +6,7 @@ namespace UsbMonitor.Dialogs;
 
 public partial class NotifyDialog
 {
-    public NotifyDialog()
+    private NotifyDialog()
     {
         InitializeComponent();
     }

@@ -32,11 +32,7 @@ public partial class AlertDialog : UserControl
         if (needRedirect)
         {
             var ret = await longRunningTaskDelegate(tokenSource.Token); // 调用耗时的任务
-            var dialog0 = new NotifyDialog
-            {
-                Message = ret.Item2
-            };
-            await DialogHost.Show(dialog0, dialogIdentifier);
+            await NotifyDialog.Show(ret.Item2, dialogIdentifier);
         }
     }
 

@@ -1,9 +1,9 @@
 ﻿using System.Collections.ObjectModel;
+using System.IO;
 using System.IO.Ports;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MaterialDesignThemes.Wpf;
 using UsbMonitor.Dialogs;
 
 namespace UsbMonitor.ViewModels;
@@ -49,18 +49,25 @@ public class MainViewModel : ObservableObject, IDisposable
                     Print($"串口{MyPort.PortName}已打开");
                     BtnContent = "Disconnect";
                 }
-                catch (Exception ex)
+                catch (UnauthorizedAccessException)
                 {
-                    Print($"打开串口时出错: {ex.Message}");
+                    Print($"打开串口{MyPort.PortName}时出错: 串口被占用或者没有足够权限");
+                    _ = NotifyDialog.Show("串口被占用或者没有足够权限", "Dialog_Root_Main");
+                }
+                catch (IOException)
+                {
+                    Print($"打开串口{MyPort.PortName}时出错: 串口已被占用");
+                    _ = NotifyDialog.Show("串口已被占用", "Dialog_Root_Main");
+                }
+                catch (ArgumentException)
+                {
+                    Print($"打开串口{MyPort.PortName}时出错: 指定的串口不是有效的");
+                    _ = NotifyDialog.Show("指定的串口不是有效的", "Dialog_Root_Main");
                 }
             }
             else
             {
-                var dialog = new NotifyDialog
-                {
-                    Message = "请选择一个串口"
-                };
-                _ = DialogHost.Show(dialog, "Dialog_Root_Main");
+                _ = NotifyDialog.Show("请选择一个串口", "Dialog_Root_Main");
             }
         }
     }
@@ -91,13 +98,8 @@ public class MainViewModel : ObservableObject, IDisposable
 
         // 移除此设备的串口
         SerialPortList.Remove(MyPort.PortName);
+        _ = NotifyDialog.Show($"串口设备({MyPort.PortName})被拔除", "Dialog_Root_Main");
         MyPort = null;
-
-        var dialog = new NotifyDialog
-        {
-            Message = "串口设备被拔除"
-        };
-        _ = DialogHost.Show(dialog, "Dialog_Root_Main");
     }
 
     public void UpdateSerialPortList()
