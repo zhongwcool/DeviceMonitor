@@ -1,9 +1,10 @@
 ﻿using System.Collections.ObjectModel;
 using System.IO.Ports;
-using System.Windows;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MaterialDesignThemes.Wpf;
+using UsbMonitor.Dialogs;
 
 namespace UsbMonitor.ViewModels;
 
@@ -34,7 +35,7 @@ public class MainViewModel : ObservableObject, IDisposable
         if (MyPort is { IsOpen: true })
         {
             MyPort.Close();
-            Print("串口已关闭");
+            Print($"串口{MyPort.PortName}已关闭");
             BtnContent = "Connect";
         }
         else
@@ -45,7 +46,7 @@ public class MainViewModel : ObservableObject, IDisposable
                 try
                 {
                     MyPort.Open();
-                    Print("串口已打开");
+                    Print($"串口{MyPort.PortName}已打开");
                     BtnContent = "Disconnect";
                 }
                 catch (Exception ex)
@@ -55,7 +56,11 @@ public class MainViewModel : ObservableObject, IDisposable
             }
             else
             {
-                MessageBox.Show("请选择一个串口", "提示", MessageBoxButton.OK, MessageBoxImage.Warning);
+                var dialog = new NotifyDialog
+                {
+                    Message = "请选择一个串口"
+                };
+                _ = DialogHost.Show(dialog, "Dialog_Root_Main");
             }
         }
     }
@@ -88,7 +93,11 @@ public class MainViewModel : ObservableObject, IDisposable
         SerialPortList.Remove(MyPort.PortName);
         MyPort = null;
 
-        MessageBox.Show("串口设备已移除", "提示", MessageBoxButton.OK, MessageBoxImage.Warning);
+        var dialog = new NotifyDialog
+        {
+            Message = "串口设备被拔除"
+        };
+        _ = DialogHost.Show(dialog, "Dialog_Root_Main");
     }
 
     public void UpdateSerialPortList()

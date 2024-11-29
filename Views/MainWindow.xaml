@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:UsbMonitor.ViewModels"
         xmlns:cv="clr-namespace:UsbMonitor.Converters"
+        xmlns:m3="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance vm:MainViewModel, IsDesignTimeCreatable=True}"
         Style="{StaticResource MaterialDesignWindow}"
@@ -12,7 +13,7 @@
     <Window.Resources>
         <cv:GreaterO0ToTrueConverter x:Key="GreaterO0ToTrueConverter" />
     </Window.Resources>
-    <Grid>
+    <m3:DialogHost DialogTheme="Inherit" Identifier="Dialog_Root_Main">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" MinWidth="200" />
@@ -40,5 +41,5 @@
 
             <ListBox ItemsSource="{Binding HistoryList}" Margin="10" Grid.Column="1" />
         </Grid>
-    </Grid>
+    </m3:DialogHost>
 </Window>
