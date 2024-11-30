@@ -104,16 +104,16 @@ public class MainViewModel : ObservableObject, IDisposable
 
     public void UpdateSerialPortList()
     {
-        var currentPorts = SerialPort.GetPortNames();
+        var foundPorts = SerialPort.GetPortNames();
         SerialPortList.Clear();
-        foreach (var port in currentPorts)
+        foreach (var port in foundPorts)
         {
             SerialPortList.Add(port);
         }
 
         Print($"找到了{SerialPortList.Count}个串口设备");
 
-        if (currentPorts.Contains(MyPort?.PortName))
+        if (MyPort != null && !foundPorts.Contains(MyPort?.PortName))
         {
             // 当前连接的串口已被移除
             HandleDeviceRemoval();
