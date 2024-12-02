@@ -28,6 +28,20 @@ public partial class MainWindow : Window
         };
 
         _comHelper = new ComHelper(this);
+        _comHelper.DeviceArrived += () =>
+        {
+            if (DataContext is MainViewModel vm) vm.UpdateSerialPortList();
+        };
+        _comHelper.MoveCompleted += () =>
+        {
+            if (DataContext is not MainViewModel vm) return;
+            vm.HandleDeviceRemoval();
+            vm.UpdateSerialPortList();
+        };
+        _comHelper.LogPrint += (msg) =>
+        {
+            if (DataContext is MainViewModel vm) vm.Print(msg);
+        };
 
         var version = Assembly.GetExecutingAssembly().GetName().Version;
         if (version != null)

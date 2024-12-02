@@ -1,8 +1,6 @@
-﻿using System.Diagnostics;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
-using UsbMonitor.ViewModels;
 
 namespace UsbMonitor.Helpers;
 
@@ -17,7 +15,6 @@ public class ComHelper(Window window)
     private static readonly Guid GUID_DEVINTERFACE_USB_DEVICE = new("A5DCBF10-6530-11D2-901F-00C04FB951ED");
 
     private IntPtr _notificationHandle;
-    private readonly MainViewModel _viewModel = window.DataContext as MainViewModel;
 
     public void RegisterForDeviceNotifications()
     {
@@ -57,33 +54,34 @@ public class ComHelper(Window window)
         {
             case DBT_DEVICEARRIVAL:
                 eventMessage = "USB device inserted";
-                _viewModel.UpdateSerialPortList();
+                DeviceArrived?.Invoke();
                 break;
             case DBT_DEVICEREMOVECOMPLETE:
                 eventMessage = "USB device removed";
-                _viewModel.HandleDeviceRemoval();
-                _viewModel.UpdateSerialPortList();
+                MoveCompleted?.Invoke();
                 break;
             default:
                 eventMessage = "Other device change event";
                 break;
         }
 
-        LogDeviceChangeEvent(eventCode, eventMessage);
-
         // 更新UI
-        window.Dispatcher.Invoke(() => _viewModel.Print(eventMessage));
+        LogPrint?.Invoke(eventMessage);
 
         return IntPtr.Zero;
     }
 
-    private void LogDeviceChangeEvent(int eventCode, string message)
-    {
-        var logEntry = $"{DateTime.Now}: Event Code {eventCode} - {message}";
-        Debug.WriteLine(logEntry);
-        // 可选：将日志写入文件或其他日志存储
-        // File.AppendAllText("DeviceChangeLog.txt", logEntry + Environment.NewLine);
-    }
+    public event DeviceArrivalHandler DeviceArrived;
+
+    public delegate void DeviceArrivalHandler();
+
+    public event DeviceMoveCompleteHandler MoveCompleted;
+
+    public delegate void DeviceMoveCompleteHandler();
+
+    public event LogPrintHandler LogPrint;
+
+    public delegate void LogPrintHandler(string message);
 
     #region P/Invoke
 
