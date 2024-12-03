@@ -30,6 +30,7 @@
 
                 <ListBox ItemsSource="{Binding SerialPortList}"
                          SelectedItem="{Binding SelectedPort}"
+                         DisplayMemberPath="DisplayName"
                          Margin="10 0 10 0"
                          Grid.Row="1" />
 

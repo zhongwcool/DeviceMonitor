@@ -7,7 +7,7 @@ using UsbMonitor.ViewModels;
 
 namespace UsbMonitor.Views;
 
-public partial class MainWindow : Window
+public partial class MainWindow
 {
     public MainWindow()
     {
@@ -30,13 +30,13 @@ public partial class MainWindow : Window
         _comHelper = new ComHelper(this);
         _comHelper.DeviceArrived += () =>
         {
-            if (DataContext is MainViewModel vm) vm.UpdateSerialPortList();
+            if (DataContext is MainViewModel vm) _ = vm.UpdateSerialPortList();
         };
         _comHelper.MoveCompleted += () =>
         {
             if (DataContext is not MainViewModel vm) return;
-            vm.HandleDeviceRemoval();
-            vm.UpdateSerialPortList();
+            _ = vm.HandleDeviceRemoval();
+            _ = vm.UpdateSerialPortList();
         };
         _comHelper.LogPrint += (msg) =>
         {

@@ -19,7 +19,7 @@ public class ComHelper(Window window)
     public void RegisterForDeviceNotifications()
     {
         var hwndSource = HwndSource.FromHwnd(new WindowInteropHelper(window).Handle);
-        if (hwndSource == null) throw new Exception("无法监控设备更改");
+        if (hwndSource == null) throw new Exception("Unable to monitor device changes.");
         hwndSource.AddHook(WndProc);
 
         var dbi = new DEV_BROADCAST_DEVICEINTERFACE
