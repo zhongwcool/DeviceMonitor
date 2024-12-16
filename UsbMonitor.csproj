@@ -6,13 +6,8 @@
         <Nullable>disable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UseWPF>true</UseWPF>
-        <ApplicationIcon>Resources\main.ico</ApplicationIcon>
+        <ApplicationIcon>Resources\Light\main.ico</ApplicationIcon>
     </PropertyGroup>
-
-    <ItemGroup>
-        <Folder Include="Dialogs\"/>
-        <Folder Include="Resources\"/>
-    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2"/>
@@ -22,11 +17,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Page Update="Views\MainWindow.xaml">
-            <Generator>MSBuild:Compile</Generator>
-            <XamlRuntime>Wpf</XamlRuntime>
-            <SubType>Designer</SubType>
-        </Page>
+        <None Remove="Resources\Dark\main.ico"/>
+        <Resource Include="Resources\Dark\main.ico"/>
+        <None Remove="Resources\Light\main.ico"/>
+        <Resource Include="Resources\Light\main.ico"/>
     </ItemGroup>
 
 </Project>

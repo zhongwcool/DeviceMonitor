@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Windows;
+using System.Windows.Media.Imaging;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Win32;
 using UsbMonitor.Helpers;
@@ -16,15 +17,15 @@ public partial class MainWindow
 
         // 加载主题
         UpdateTheme();
+        UpdateIcon();
         // 监听系统主题变化
         SystemEvents.UserPreferenceChanged += (_, args) =>
         {
             // 当事件是由于主题变化引起的
-            if (args.Category == UserPreferenceCategory.General)
-            {
-                // 这里你可以写代码来处理主题变化，例如，重新加载样式或者资源
-                UpdateTheme();
-            }
+            if (args.Category != UserPreferenceCategory.General) return;
+            // 这里你可以写代码来处理主题变化，例如，重新加载样式或者资源
+            UpdateTheme();
+            UpdateIcon();
         };
 
         _comHelper = new ComHelper(this);
@@ -85,6 +86,39 @@ public partial class MainWindow
         }
 
         paletteHelper.SetTheme(theme);
+    }
+
+    // 更改托盘图标的函数
+    private void UpdateIcon()
+    {
+        var isDark = UseDarkSystemTheme();
+        if (isDark)
+        {
+            var iconUri = new Uri("pack://application:,,,/Resources/Dark/main.ico", UriKind.RelativeOrAbsolute);
+            Icon = BitmapFrame.Create(iconUri);
+        }
+        else
+        {
+            var iconUri = new Uri("pack://application:,,,/Resources/Light/main.ico", UriKind.RelativeOrAbsolute);
+            Icon = BitmapFrame.Create(iconUri);
+        }
+    }
+
+    private static bool UseDarkSystemTheme()
+    {
+        // 在注册表中，Windows保存它的个人设置信息
+        // 目前Windows将AppsUseLightTheme键值用于表示深色或浅色主题
+        // 该键值位于路径HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize下
+        const string registryKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize";
+        const string registryValueName = "AppsUseLightTheme";
+
+        using var key = Registry.CurrentUser.OpenSubKey(registryKeyPath);
+        var registryValueObject = key?.GetValue(registryValueName)!;
+
+        var registryValue = (int?)registryValueObject;
+
+        // AppsUseLightTheme 0表示深色，1表示浅色
+        return registryValue == 0;
     }
 
     #endregion
