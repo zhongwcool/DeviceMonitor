@@ -18,6 +18,8 @@ public partial class NotifyDialog
             Message = message
         };
 
+        // 关闭其他已经打开的Dialog
+        DialogHost.CloseDialogCommand.Execute(null, null);
         // show the dialog
         var result = await DialogHost.Show(dialog, dialogIdentifier);
 

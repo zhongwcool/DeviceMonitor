@@ -6,14 +6,18 @@
         <Nullable>disable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UseWPF>true</UseWPF>
+        <BuildNumber>$([System.DateTime]::Now.ToString("MMdd"))</BuildNumber>
+        <RevisionNumber>$([System.DateTime]::Now.ToString("HHmm"))</RevisionNumber>
+        <AssemblyVersion>1.1.$(BuildNumber).$(RevisionNumber)</AssemblyVersion>
+        <FileVersion>1.1.$(BuildNumber).$(RevisionNumber)</FileVersion>
         <ApplicationIcon>Resources\Light\main.ico</ApplicationIcon>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2"/>
-        <PackageReference Include="MaterialDesignThemes" Version="5.1.0"/>
-        <PackageReference Include="System.IO.Ports" Version="9.0.0"/>
-        <PackageReference Include="System.Management" Version="9.0.0"/>
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0"/>
+        <PackageReference Include="MaterialDesignThemes" Version="5.2.1"/>
+        <PackageReference Include="System.IO.Ports" Version="9.0.1"/>
+        <PackageReference Include="System.Management" Version="9.0.1"/>
     </ItemGroup>
 
     <ItemGroup>

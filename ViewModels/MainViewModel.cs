@@ -3,7 +3,6 @@ using System.IO;
 using System.IO.Ports;
 using System.Management;
 using System.Text.RegularExpressions;
-using System.Windows.Input;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -17,7 +16,7 @@ public class MainViewModel : ObservableObject, IDisposable
     public MainViewModel()
     {
         _ = UpdateSerialPortList();
-        CommandOpen = new RelayCommand(OpenPort);
+        CommandOpen = new AsyncRelayCommand(OpenPort);
     }
 
     private SerialPort MyPort { get; set; }
@@ -32,9 +31,9 @@ public class MainViewModel : ObservableObject, IDisposable
         set => SetProperty(ref _selectedPort, value);
     }
 
-    public ICommand CommandOpen { get; set; }
+    public IAsyncRelayCommand CommandOpen { get; set; }
 
-    private void OpenPort()
+    private async Task OpenPort()
     {
         if (MyPort is { IsOpen: true })
         {
@@ -74,6 +73,8 @@ public class MainViewModel : ObservableObject, IDisposable
                 _ = NotifyDialog.Show("请选择一个串口", "Dialog_Root_Main");
             }
         }
+
+        await Task.CompletedTask;
     }
 
     private string _btnContent = "Connect";
@@ -112,24 +113,35 @@ public class MainViewModel : ObservableObject, IDisposable
     {
         if (_inUpdate) return;
         _inUpdate = true;
-        var foundPorts = SerialPort.GetPortNames();
-        SerialPortList.Clear();
-        foreach (var port in foundPorts)
-            SerialPortList.Add(new Comport { Port = port, DisplayName = port });
-
-        var ret = TryToRichPortsViaWmi();
-        if (ret != 0) _ = Task.Delay(TimeSpan.FromSeconds(2)).ContinueWith(_ => { TryToRichPortsViaWmi(); });
-
-        Print($"找到了{SerialPortList.Count}个串口设备");
-
-        if (MyPort != null && !foundPorts.Contains(MyPort?.PortName))
+        try
         {
-            // 当前连接的串口已被移除
-            await HandleDeviceRemoval();
-        }
+            var foundPorts = SerialPort.GetPortNames();
+            SerialPortList.Clear();
+            foreach (var port in foundPorts)
+                SerialPortList.Add(new Comport { Port = port, DisplayName = port });
 
-        SelectedPort = SerialPortList.FirstOrDefault();
-        _inUpdate = false;
+            var ret = TryToRichPortsViaWmi();
+            if (ret != 0) _ = Task.Delay(TimeSpan.FromSeconds(2)).ContinueWith(_ => { TryToRichPortsViaWmi(); });
+
+            Print($"找到了{SerialPortList.Count}个串口设备");
+
+            if (MyPort != null && !foundPorts.Contains(MyPort?.PortName))
+            {
+                // 当前连接的串口已被移除
+                _ = HandleDeviceRemoval();
+            }
+
+            SelectedPort = SerialPortList.FirstOrDefault();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        finally
+        {
+            _inUpdate = false;
+        }
     }
 
     private int TryToRichPortsViaWmi()

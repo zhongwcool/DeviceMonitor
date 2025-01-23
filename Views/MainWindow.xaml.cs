@@ -39,7 +39,7 @@ public partial class MainWindow
             _ = vm.HandleDeviceRemoval();
             _ = vm.UpdateSerialPortList();
         };
-        _comHelper.LogPrint += (msg) =>
+        _comHelper.LogPrint += msg =>
         {
             if (DataContext is MainViewModel vm) vm.Print(msg);
         };
