@@ -35,9 +35,7 @@ public partial class MainWindow
         };
         _comHelper.MoveCompleted += () =>
         {
-            if (DataContext is not MainViewModel vm) return;
-            _ = vm.HandleDeviceRemoval();
-            _ = vm.UpdateSerialPortList();
+            if (DataContext is MainViewModel vm) _ = vm.UpdateSerialPortList();
         };
         _comHelper.LogPrint += msg =>
         {

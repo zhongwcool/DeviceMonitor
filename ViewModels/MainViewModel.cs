@@ -87,7 +87,7 @@ public class MainViewModel : ObservableObject, IDisposable
 
     public ObservableCollection<string> HistoryList { get; } = [];
 
-    public async Task HandleDeviceRemoval()
+    private async Task HandleDeviceRemoval()
     {
         // 检查当前打开的串口是否仍然存在
         if (MyPort == null || SerialPort.GetPortNames().Contains(MyPort.PortName)) return;
@@ -103,8 +103,10 @@ public class MainViewModel : ObservableObject, IDisposable
         if (comPortToRemove != null) SerialPortList.Remove(comPortToRemove);
 
         // 提示用户
-        await NotifyDialog.Show($"串口设备({MyPort.PortName})被拔除", "Dialog_Root_Main");
+        _ = NotifyDialog.Show($"串口设备({MyPort.PortName})被拔除", "Dialog_Root_Main");
         MyPort = null;
+
+        await Task.CompletedTask;
     }
 
     private bool _inUpdate;
@@ -116,9 +118,19 @@ public class MainViewModel : ObservableObject, IDisposable
         try
         {
             var foundPorts = SerialPort.GetPortNames();
-            SerialPortList.Clear();
+            // 移除不存在的串口
+            var portsToRemove = SerialPortList.Where(port => !foundPorts.Contains(port.Port)).ToList();
+            foreach (var port in portsToRemove)
+            {
+                SerialPortList.Remove(port);
+            }
+
             foreach (var port in foundPorts)
+            {
+                // 如果串口已经存在，跳过
+                if (SerialPortList.Any(p => p.Port == port)) continue;
                 SerialPortList.Add(new Comport { Port = port, DisplayName = port });
+            }
 
             var ret = TryToRichPortsViaWmi();
             if (ret != 0) _ = Task.Delay(TimeSpan.FromSeconds(2)).ContinueWith(_ => { TryToRichPortsViaWmi(); });
@@ -142,6 +154,8 @@ public class MainViewModel : ObservableObject, IDisposable
         {
             _inUpdate = false;
         }
+
+        await Task.CompletedTask;
     }
 
     private int TryToRichPortsViaWmi()
